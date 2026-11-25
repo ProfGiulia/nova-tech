@@ -271,3 +271,30 @@ footer span { color: #bd8846; }
   .mission-header h1 { font-size: 29px; }
   .document-top { flex-direction: column; }
 }
+.journal-layout {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.journal-layout > div {
+  display: block;
+  min-width: 0;
+}
+
+.journal-layout > div > .document {
+  width: 100%;
+  height: auto;
+}
+
+.journal-layout > .entry-card {
+  margin-top: 0;
+  min-width: 0;
+}
+
+@media (max-width: 750px) {
+  .journal-layout {
+    grid-template-columns: 1fr;
+  }
+}

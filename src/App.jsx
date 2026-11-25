@@ -78,7 +78,16 @@ function DocumentCard({ date, label, title, description, rows, number }) {
   )
 }
 
-function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, onContinue, document }) {
+function JournalEditor({
+  date,
+  entries,
+  setEntries,
+  onCheck,
+  feedback,
+  success,
+  onContinue,
+  document,
+}) {
   const [shuffledAccounts] = useState(() =>
     [...accountOptions].sort(() => Math.random() - 0.5)
   )
@@ -91,25 +100,24 @@ function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, 
     )
   }
 
-  const totalDebit = entries.reduce((sum, row) => sum + (Number(row.debit) || 0), 0)
-  const totalCredit = entries.reduce((sum, row) => sum + (Number(row.credit) || 0), 0)
+  const totalDebit = entries.reduce(
+    (sum, row) => sum + (Number(row.debit) || 0), 0
+  )
+  const totalCredit = entries.reduce(
+    (sum, row) => sum + (Number(row.credit) || 0), 0
+  )
 
   return (
-    <div
-      className="journal-layout"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
-        gap: '24px',
-        alignItems: 'start',
-      }}
-    >
+    <div className="journal-layout">
       <div>{document}</div>
 
       <section className="entry-card">
         <span className="eyebrow">LIBRO GIORNALE · {date} · ANNO N</span>
         <h2>Inserisci la scrittura contabile</h2>
-        <p>Per ogni riga seleziona il conto e inserisci l'importo in Dare oppure in Avere.</p>
+        <p>
+          Per ogni riga seleziona il conto e inserisci l'importo in Dare
+          oppure in Avere.
+        </p>
 
         <div className="journal">
           <div className="journal-head">
@@ -124,11 +132,20 @@ function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, 
                 value={row.account}
                 onChange={e => updateRow(index, 'account', e.target.value)}
                 aria-label={`Conto riga ${index + 1}`}
-                style={{ width: '100%', minWidth: 0, padding: '10px', border: '1px solid #d8dee8', borderRadius: '7px', background: '#fff' }}
+                style={{
+                  width: '100%',
+                  minWidth: 0,
+                  padding: '10px',
+                  border: '1px solid #d8dee8',
+                  borderRadius: '7px',
+                  background: '#fff',
+                }}
               >
                 <option value="">Seleziona conto...</option>
                 {shuffledAccounts.map(account => (
-                  <option key={account} value={account}>{account}</option>
+                  <option key={account} value={account}>
+                    {account}
+                  </option>
                 ))}
               </select>
 
@@ -139,7 +156,13 @@ function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, 
                 value={row.debit}
                 onChange={e => updateRow(index, 'debit', e.target.value)}
                 aria-label={`Dare riga ${index + 1}`}
-                style={{ width: '100%', minWidth: 0, padding: '10px', border: '1px solid #d8dee8', borderRadius: '7px' }}
+                style={{
+                  width: '100%',
+                  minWidth: 0,
+                  padding: '10px',
+                  border: '1px solid #d8dee8',
+                  borderRadius: '7px',
+                }}
               />
 
               <input
@@ -149,23 +172,47 @@ function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, 
                 value={row.credit}
                 onChange={e => updateRow(index, 'credit', e.target.value)}
                 aria-label={`Avere riga ${index + 1}`}
-                style={{ width: '100%', minWidth: 0, padding: '10px', border: '1px solid #d8dee8', borderRadius: '7px' }}
+                style={{
+                  width: '100%',
+                  minWidth: 0,
+                  padding: '10px',
+                  border: '1px solid #d8dee8',
+                  borderRadius: '7px',
+                }}
               />
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', padding: '16px', marginTop: '12px', background: '#f3f6fa', borderRadius: '10px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '16px',
+            flexWrap: 'wrap',
+            padding: '16px',
+            marginTop: '12px',
+            background: '#f3f6fa',
+            borderRadius: '10px',
+          }}
+        >
           <strong>Totale Dare: € {formatEuro(totalDebit)}</strong>
           <strong>Totale Avere: € {formatEuro(totalCredit)}</strong>
         </div>
 
         <div className="hint">
           <strong>💡 Ricorda</strong>
-          <p>Una scrittura contabile è corretta quando il totale Dare coincide con il totale Avere.</p>
+          <p>
+            Una scrittura contabile è corretta quando il totale Dare
+            coincide con il totale Avere.
+          </p>
         </div>
 
-        <button className="primary-button" onClick={onCheck} disabled={success}>
+        <button
+          className="primary-button"
+          onClick={onCheck}
+          disabled={success}
+        >
           VERIFICA LA REGISTRAZIONE
         </button>
 
@@ -176,7 +223,11 @@ function JournalEditor({ date, entries, setEntries, onCheck, feedback, success, 
         )}
 
         {success && (
-          <button className="primary-button" onClick={onContinue} style={{ marginTop: '16px' }}>
+          <button
+            className="primary-button"
+            onClick={onContinue}
+            style={{ marginTop: '16px' }}
+          >
             CONTINUA →
           </button>
         )}
@@ -211,25 +262,55 @@ function App() {
 
   const [started, setStarted] = usePersistentState('nova-tech-started', false)
   const [activeMission, setActiveMission] = usePersistentState('nova-tech-active-mission', 0)
-  const [step, setStep] = usePersistentState('nova-tech-step', 0)
+
+  // Nuova versione dello stato: riparte dall'inizio della missione aggiornata.
+  const [step, setStep] = usePersistentState('nova-tech-step-v2', 0)
 
   const [completed, setCompleted] = usePersistentState('nova-tech-completed', false)
-  const [mission2Completed, setMission2Completed] = usePersistentState('nova-tech-mission2-completed', false)
+
+  // Nuova chiave per evitare che le vecchie prove risultino già completate.
+  const [mission2Completed, setMission2Completed] = usePersistentState(
+    'nova-tech-mission2-completed-v2',
+    false
+  )
 
   const [entry15, setEntry15] = usePersistentState('nova-tech-entry-15', makeRows(5))
   const [entry16, setEntry16] = usePersistentState('nova-tech-entry-16', makeRows(3))
   const [entry20, setEntry20] = usePersistentState('nova-tech-entry-20', makeRows(4))
-  const [entry22, setEntry22] = usePersistentState('nova-tech-entry-22', makeRows(3))
+
+  // Due registrazioni distinte per il 22 settembre.
+  const [entry22Invoice, setEntry22Invoice] = usePersistentState(
+    'nova-tech-entry-22-invoice',
+    makeRows(3)
+  )
+  const [entry22Payment, setEntry22Payment] = usePersistentState(
+    'nova-tech-entry-22-payment',
+    makeRows(2)
+  )
 
   const [feedback15, setFeedback15] = usePersistentState('nova-tech-feedback-15', '')
   const [feedback16, setFeedback16] = usePersistentState('nova-tech-feedback-16', '')
   const [feedback20, setFeedback20] = usePersistentState('nova-tech-feedback-20', '')
-  const [feedback22, setFeedback22] = usePersistentState('nova-tech-feedback-22', '')
+  const [feedback22Invoice, setFeedback22Invoice] = usePersistentState(
+    'nova-tech-feedback-22-invoice',
+    ''
+  )
+  const [feedback22Payment, setFeedback22Payment] = usePersistentState(
+    'nova-tech-feedback-22-payment',
+    ''
+  )
 
   const [success15, setSuccess15] = usePersistentState('nova-tech-success-15', false)
   const [success16, setSuccess16] = usePersistentState('nova-tech-success-16', false)
   const [success20, setSuccess20] = usePersistentState('nova-tech-success-20', false)
-  const [success22, setSuccess22] = usePersistentState('nova-tech-success-22', false)
+  const [success22Invoice, setSuccess22Invoice] = usePersistentState(
+    'nova-tech-success-22-invoice',
+    false
+  )
+  const [success22Payment, setSuccess22Payment] = usePersistentState(
+    'nova-tech-success-22-payment',
+    false
+  )
 
   function checkEntry(entries, expected, setFeedback, setSuccess, message) {
     const filled = entries.filter(row =>
@@ -250,32 +331,49 @@ function App() {
       setFeedback(message)
       setSuccess(true)
     } else {
-      setFeedback('La registrazione non è ancora corretta. Controlla i conti, gli importi e la collocazione in Dare e Avere.')
+      setFeedback(
+        'La registrazione non è ancora corretta. Controlla i conti, gli importi e la collocazione in Dare e Avere.'
+      )
     }
   }
 
   function checkEntry15() {
-    checkEntry(entry15, [
-      { account: 'Cassa', debit: 25000, credit: 0 },
-      { account: 'Assegni bancari', debit: 45000, credit: 0 },
-      { account: 'Mobili e arredi', debit: 12000, credit: 0 },
-      { account: 'Attrezzature informatiche', debit: 8000, credit: 0 },
-      { account: 'Capitale netto', debit: 0, credit: 90000 },
-    ], setFeedback15, setSuccess15,
-    'Ottimo! La registrazione della costituzione di NOVA TECH è corretta.')
+    checkEntry(
+      entry15,
+      [
+        { account: 'Cassa', debit: 25000, credit: 0 },
+        { account: 'Assegni bancari', debit: 45000, credit: 0 },
+        { account: 'Mobili e arredi', debit: 12000, credit: 0 },
+        { account: 'Attrezzature informatiche', debit: 8000, credit: 0 },
+        { account: 'Capitale netto', debit: 0, credit: 90000 },
+      ],
+      setFeedback15,
+      setSuccess15,
+      'Ottimo! La registrazione della costituzione di NOVA TECH è corretta.'
+    )
   }
 
   function checkEntry16() {
-    const expected = [
-      { account: 'Banca c/c', debit: 45000, credit: 0 },
-      { account: 'Assegni bancari', debit: 0, credit: 45000 },
-    ]
+    checkEntry(
+      entry16,
+      [
+        { account: 'Banca c/c', debit: 45000, credit: 0 },
+        { account: 'Assegni bancari', debit: 0, credit: 45000 },
+      ],
+      setFeedback16,
+      setSuccess16,
+      'Perfetto! Anche la registrazione del versamento è corretta.'
+    )
 
-    const filled = entry16.filter(row => row.account || row.debit || row.credit)
-
+    const filled = entry16.filter(row =>
+      row.account || row.debit || row.credit
+    )
     const valid =
-      filled.length === expected.length &&
-      expected.every(item =>
+      filled.length === 2 &&
+      [
+        { account: 'Banca c/c', debit: 45000, credit: 0 },
+        { account: 'Assegni bancari', debit: 0, credit: 45000 },
+      ].every(item =>
         filled.some(row =>
           row.account === item.account &&
           Number(row.debit || 0) === item.debit &&
@@ -283,44 +381,59 @@ function App() {
         )
       )
 
-    if (valid) {
-      setFeedback16('Perfetto! Anche la registrazione del versamento è corretta.')
-      setSuccess16(true)
-      setCompleted(true)
-    } else {
-      setFeedback16('Non è ancora corretta. Ricorda: gli assegni vengono versati sul conto corrente bancario.')
-    }
+    if (valid) setCompleted(true)
   }
 
   function checkEntry20() {
-    checkEntry(entry20, [
-      { account: 'Merci c/acquisti', debit: 14000, credit: 0 },
-      { account: 'Trasporti su acquisti', debit: 400, credit: 0 },
-      { account: 'IVA ns/credito', debit: 3168, credit: 0 },
-      { account: 'Debiti v/fornitori', debit: 0, credit: 17568 },
-    ], setFeedback20, setSuccess20,
-    'Ben fatto! Hai registrato correttamente l’acquisto di merci e il trasporto.')
+    checkEntry(
+      entry20,
+      [
+        { account: 'Merci c/acquisti', debit: 14000, credit: 0 },
+        { account: 'Trasporti su acquisti', debit: 400, credit: 0 },
+        { account: 'IVA ns/credito', debit: 3168, credit: 0 },
+        { account: 'Debiti v/fornitori', debit: 0, credit: 17568 },
+      ],
+      setFeedback20,
+      setSuccess20,
+      'Ben fatto! Hai registrato correttamente l’acquisto di merci e il trasporto.'
+    )
   }
 
-  function checkEntry22() {
-    checkEntry(entry22, [
-      { account: 'Materiale di consumo c/acquisti', debit: 600, credit: 0 },
-      { account: 'IVA ns/credito', debit: 132, credit: 0 },
-      { account: 'Cassa', debit: 0, credit: 732 },
-    ], setFeedback22, setSuccess22,
-    'Perfetto! Anche l’acquisto del materiale di consumo è corretto.')
+  function checkEntry22Invoice() {
+    checkEntry(
+      entry22Invoice,
+      [
+        { account: 'Materiale di consumo c/acquisti', debit: 600, credit: 0 },
+        { account: 'IVA ns/credito', debit: 132, credit: 0 },
+        { account: 'Debiti v/fornitori', debit: 0, credit: 732 },
+      ],
+      setFeedback22Invoice,
+      setSuccess22Invoice,
+      'Perfetto! La fattura è stata registrata correttamente. Ora puoi registrare il pagamento.'
+    )
+  }
 
-    const expected = [
-      { account: 'Materiale di consumo c/acquisti', debit: 600, credit: 0 },
-      { account: 'IVA ns/credito', debit: 132, credit: 0 },
-      { account: 'Cassa', debit: 0, credit: 732 },
-    ]
+  function checkEntry22Payment() {
+    checkEntry(
+      entry22Payment,
+      [
+        { account: 'Debiti v/fornitori', debit: 732, credit: 0 },
+        { account: 'Cassa', debit: 0, credit: 732 },
+      ],
+      setFeedback22Payment,
+      setSuccess22Payment,
+      'Ottimo! Anche il pagamento in contanti è stato registrato correttamente.'
+    )
 
-    const filled = entry22.filter(row => row.account || row.debit || row.credit)
-
+    const filled = entry22Payment.filter(row =>
+      row.account || row.debit || row.credit
+    )
     const valid =
-      filled.length === expected.length &&
-      expected.every(item =>
+      filled.length === 2 &&
+      [
+        { account: 'Debiti v/fornitori', debit: 732, credit: 0 },
+        { account: 'Cassa', debit: 0, credit: 732 },
+      ].every(item =>
         filled.some(row =>
           row.account === item.account &&
           Number(row.debit || 0) === item.debit &&
@@ -387,12 +500,12 @@ function App() {
       date="22 SETTEMBRE"
       label="FATTURA DI ACQUISTO"
       title="Acquisto di materiale di consumo"
-      description="NOVA TECH acquista materiale di consumo per € 600, oltre IVA al 22%. L'importo complessivo viene pagato immediatamente in contanti."
+      description="NOVA TECH acquista materiale di consumo per € 600, oltre IVA al 22%. La fattura viene pagata immediatamente in contanti. Registra prima la fattura e poi il pagamento."
       number="004"
       rows={[
         { label: 'Materiale di consumo', value: '€ 600,00' },
         { label: 'IVA 22%', value: '€ 132,00' },
-        { label: 'Totale pagato', value: '€ 732,00', total: true },
+        { label: 'Totale fattura', value: '€ 732,00', total: true },
       ]}
     />
   )
@@ -415,17 +528,35 @@ function App() {
           <div className="welcome-content">
             <span className="eyebrow">SIMULAZIONE AZIENDALE · ECONOMIA AZIENDALE</span>
             <h1>Benvenuto in<br /><span>NOVA TECH.</span></h1>
-            <p>La tua carriera da contabile inizia qui. Gestisci i documenti, registra le operazioni e accompagna l'azienda verso il successo.</p>
+            <p>
+              La tua carriera da contabile inizia qui. Gestisci i documenti,
+              registra le operazioni e accompagna l'azienda verso il successo.
+            </p>
 
             <div className="login-card">
               <h2>Identificati per iniziare</h2>
               <label>Nome</label>
-              <input value={student.name} onChange={e => setStudent({ ...student, name: e.target.value })} placeholder="Il tuo nome" />
+              <input
+                value={student.name}
+                onChange={e => setStudent({ ...student, name: e.target.value })}
+                placeholder="Il tuo nome"
+              />
               <label>Cognome</label>
-              <input value={student.surname} onChange={e => setStudent({ ...student, surname: e.target.value })} placeholder="Il tuo cognome" />
+              <input
+                value={student.surname}
+                onChange={e => setStudent({ ...student, surname: e.target.value })}
+                placeholder="Il tuo cognome"
+              />
               <label>Classe</label>
-              <input value={student.className} onChange={e => setStudent({ ...student, className: e.target.value })} placeholder="Es. 3A SIA" />
-              <button disabled={!student.name.trim() || !student.surname.trim() || !student.className.trim()} onClick={() => setStarted(true)}>
+              <input
+                value={student.className}
+                onChange={e => setStudent({ ...student, className: e.target.value })}
+                placeholder="Es. 3A SIA"
+              />
+              <button
+                disabled={!student.name.trim() || !student.surname.trim() || !student.className.trim()}
+                onClick={() => setStarted(true)}
+              >
                 ENTRA IN AZIENDA <span>→</span>
               </button>
             </div>
@@ -465,12 +596,20 @@ function App() {
           <section className="stats">
             <div><span>MISSIONI COMPLETATE</span><strong>{completedCount} / 5</strong></div>
             <div><span>PUNTEGGIO</span><strong>{completedCount * 100} pt</strong></div>
-            <div><span>STATO</span><strong className="active">{completedCount > 0 ? 'In attività' : 'In formazione'}</strong></div>
+            <div>
+              <span>STATO</span>
+              <strong className="active">
+                {completedCount > 0 ? 'In attività' : 'In formazione'}
+              </strong>
+            </div>
           </section>
 
           <section className="missions-section">
             <div className="section-heading">
-              <div><span className="eyebrow">IL TUO PERCORSO</span><h2>Le missioni</h2></div>
+              <div>
+                <span className="eyebrow">IL TUO PERCORSO</span>
+                <h2>Le missioni</h2>
+              </div>
               <span className="mission-count">01 — 05</span>
             </div>
 
@@ -500,12 +639,14 @@ function App() {
                         {isCompleted ? 'Completata' : isAvailable ? 'Disponibile' : 'Bloccata'}
                       </span>
                       {isAvailable
-                        ? <button onClick={() => {
+                        ? (
+                          <button onClick={() => {
                             setStep(0)
                             setActiveMission(mission.id)
                           }}>
                             {isCompleted ? 'RIVEDI →' : 'ENTRA →'}
                           </button>
+                        )
                         : <span>🔒</span>}
                     </div>
                   </article>
@@ -516,7 +657,9 @@ function App() {
         </main>
       ) : activeMission === 1 ? (
         <main className="mission-page">
-          <button className="back-button" onClick={() => setActiveMission(0)}>← TORNA ALLE MISSIONI</button>
+          <button className="back-button" onClick={() => setActiveMission(0)}>
+            ← TORNA ALLE MISSIONI
+          </button>
 
           <div className="mission-header">
             <span className="eyebrow">MISSIONE 01 · NOVA TECH</span>
@@ -586,10 +729,13 @@ function App() {
                 <p>15 settembre: costituzione dell'impresa per € 90.000.</p>
                 <p>16 settembre: versamento degli assegni bancari per € 45.000.</p>
               </div>
-              <button className="primary-button" onClick={() => {
-                setStep(0)
-                setActiveMission(0)
-              }}>
+              <button
+                className="primary-button"
+                onClick={() => {
+                  setStep(0)
+                  setActiveMission(0)
+                }}
+              >
                 TORNA ALLE MISSIONI →
               </button>
             </section>
@@ -597,7 +743,9 @@ function App() {
         </main>
       ) : activeMission === 2 ? (
         <main className="mission-page">
-          <button className="back-button" onClick={() => setActiveMission(0)}>← TORNA ALLE MISSIONI</button>
+          <button className="back-button" onClick={() => setActiveMission(0)}>
+            ← TORNA ALLE MISSIONI
+          </button>
 
           <div className="mission-header">
             <span className="eyebrow">MISSIONE 02 · NOVA TECH</span>
@@ -635,10 +783,10 @@ function App() {
             <section className="mission-content">
               {document22}
               <TaskCard
-                title="Registra il pagamento"
-                description="Rileva il costo del materiale di consumo, l'IVA a credito e l'uscita di denaro dalla cassa."
-                hint="Il costo e l'IVA a credito si registrano in Dare. La diminuzione della cassa si registra in Avere."
-                buttonText="INIZIA LA REGISTRAZIONE"
+                title="Registra la fattura"
+                description="Prima di effettuare il pagamento, devi registrare la fattura ricevuta dal fornitore."
+                hint="Rileva il costo del materiale di consumo e l'IVA a credito in Dare. Il debito verso il fornitore si registra in Avere."
+                buttonText="REGISTRA LA FATTURA"
                 onClick={() => setStep(3)}
               />
             </section>
@@ -646,31 +794,73 @@ function App() {
 
           {step === 3 && (
             <JournalEditor
-              date="22 SETTEMBRE"
+              date="22 SETTEMBRE · REGISTRAZIONE FATTURA"
               document={document22}
-              entries={entry22}
-              setEntries={setEntry22}
-              onCheck={checkEntry22}
-              feedback={feedback22}
-              success={success22}
+              entries={entry22Invoice}
+              setEntries={setEntry22Invoice}
+              onCheck={checkEntry22Invoice}
+              feedback={feedback22Invoice}
+              success={success22Invoice}
               onContinue={() => setStep(4)}
             />
           )}
 
           {step === 4 && (
+            <section className="mission-content">
+              {document22}
+              <TaskCard
+                title="Registra il pagamento"
+                description="La fattura è stata registrata. Ora NOVA TECH salda immediatamente il debito verso il fornitore pagando in contanti."
+                hint="Il debito verso il fornitore diminuisce e si registra in Dare. La cassa diminuisce e si registra in Avere."
+                buttonText="REGISTRA IL PAGAMENTO"
+                onClick={() => setStep(5)}
+              />
+            </section>
+          )}
+
+          {step === 5 && (
+            <JournalEditor
+              date="22 SETTEMBRE · PAGAMENTO"
+              document={document22}
+              entries={entry22Payment}
+              setEntries={setEntry22Payment}
+              onCheck={checkEntry22Payment}
+              feedback={feedback22Payment}
+              success={success22Payment}
+              onContinue={() => setStep(6)}
+            />
+          )}
+
+          {step === 6 && (
             <section className="entry-card">
               <span className="eyebrow">MISSIONE COMPLETATA</span>
               <h2>Complimenti!</h2>
-              <p>Hai registrato correttamente i primi acquisti di NOVA TECH.</p>
+              <p>
+                Hai registrato correttamente i primi acquisti di NOVA TECH,
+                distinguendo la fattura dal successivo pagamento.
+              </p>
               <div className="hint">
                 <strong>Riepilogo delle registrazioni</strong>
-                <p>20 settembre: acquisto merci e trasporto per un imponibile di € 14.400, IVA € 3.168, totale € 17.568.</p>
-                <p>22 settembre: acquisto materiale di consumo per € 600, IVA € 132, totale pagato € 732.</p>
+                <p>
+                  20 settembre: acquisto merci e trasporto per un imponibile
+                  di € 14.400, IVA € 3.168, totale € 17.568.
+                </p>
+                <p>
+                  22 settembre – fattura: materiale di consumo € 600,
+                  IVA € 132, debiti v/fornitori € 732.
+                </p>
+                <p>
+                  22 settembre – pagamento: debiti v/fornitori in Dare
+                  € 732 e Cassa in Avere € 732.
+                </p>
               </div>
-              <button className="primary-button" onClick={() => {
-                setStep(0)
-                setActiveMission(0)
-              }}>
+              <button
+                className="primary-button"
+                onClick={() => {
+                  setStep(0)
+                  setActiveMission(0)
+                }}
+              >
                 TORNA ALLE MISSIONI →
               </button>
             </section>
@@ -678,7 +868,9 @@ function App() {
         </main>
       ) : (
         <main className="mission-page">
-          <button className="back-button" onClick={() => setActiveMission(0)}>← TORNA ALLE MISSIONI</button>
+          <button className="back-button" onClick={() => setActiveMission(0)}>
+            ← TORNA ALLE MISSIONI
+          </button>
           <div className="mission-header">
             <h1>Missione non ancora disponibile</h1>
             <p>Completa le missioni precedenti per proseguire.</p>
@@ -686,7 +878,9 @@ function App() {
         </main>
       )}
 
-      <footer>NOVA TECH <span>·</span> LABORATORIO DI ECONOMIA AZIENDALE</footer>
+      <footer>
+        NOVA TECH <span>·</span> LABORATORIO DI ECONOMIA AZIENDALE
+      </footer>
     </div>
   )
 }
